@@ -2,12 +2,23 @@
   <!-- 注意，使用 autoResize 配置时，需要在画布容器外面再套一层宽高都是 100% 的外层容器，在外层容器上监听尺寸改变，当外层容器大小改变时，画布自动重新计算宽高以及元素位置。 -->
   <div class="backgournd-grid-app">
     <div id="container" class="app-content"></div>
+    <TeleportContainer />
   </div>
 </template>
 
 <script setup>
 import { Graph } from "@antv/x6";
 import { reactive, onMounted } from "vue";
+import { register, getTeleport } from "@antv/x6-vue-shape";
+import ProgressNode from "./components/progress-node.vue";
+
+register({
+  shape: "node_hu",
+  width: 100,
+  height: 100,
+  component: ProgressNode,
+});
+const TeleportContainer = getTeleport();
 
 const graph = reactive({});
 
@@ -32,6 +43,12 @@ onMounted(() => {
         },
       ],
     },
+  });
+
+  graph.value.addNode({
+    shape: "node_hu",
+    x: 100,
+    y: 60,
   });
 });
 </script>
