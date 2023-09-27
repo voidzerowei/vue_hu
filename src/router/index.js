@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory } from "vue-router";
 
 // 定义路由配置
 const routes = [
@@ -10,6 +10,11 @@ const routes = [
   {
     path: "/x6",
     component: () => import("@/views/antv-x6/x6-index.vue"),
+    hidden: true,
+  },
+  {
+    path: "/ruanzhu",
+    component: () => import("@/views/ruanzhu/ruan-zhu.vue"),
     hidden: true,
   },
 ];
