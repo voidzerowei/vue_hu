@@ -17,6 +17,34 @@ register({
   width: 200,
   height: 70,
   component: ProgressNode,
+  ports: {
+    groups: {
+      top: {
+        position: "top",
+        attrs: {
+          circle: {
+            r: 4,
+            magnet: true,
+            stroke: "#C2C8D5",
+            strokeWidth: 1,
+            fill: "#fff",
+          },
+        },
+      },
+      bottom: {
+        position: "bottom",
+        attrs: {
+          circle: {
+            r: 4,
+            magnet: true,
+            stroke: "#C2C8D5",
+            strokeWidth: 1,
+            fill: "#fff",
+          },
+        },
+      },
+    },
+  },
 });
 
 Graph.registerEdge(
@@ -83,35 +111,91 @@ const initGraph = () => {
   });
 };
 const initNode = () => {
-  graph.value.addNode({
-    shape: "node_hu",
-    x: 100,
-    y: 60,
-    data: {
-      status: "success",
-      label: "No.1",
-    },
+  // graph.value.addNode({
+  //   shape: "node_hu",
+  //   x: 100,
+  //   y: 60,
+  //   data: {
+  //     status: "success",
+  //     label: "No.1",
+  //   },
+  // });
+
+  // graph.value.addNode({
+  //   shape: "node_hu",
+  //   x: 100,
+  //   y: 180,
+  //   data: {
+  //     status: "running",
+  //     label: "No.2",
+  //   },
+  // });
+
+  // graph.value.addNode({
+  //   shape: "node_hu",
+  //   x: 100,
+  //   y: 300,
+  //   data: {
+  //     status: "failed",
+  //     label: "No.3",
+  //   },
+  // });
+  const cells = [];
+  const dataNode = [];
+  const dataEdge = [];
+
+  for (let i = 0; i < 3; i++) {
+    dataNode.push({
+      id: `node_${i}`,
+      shape: "node_hu",
+      x: 100,
+      y: 120 * i,
+      ports: [
+        {
+          id: `port-1`,
+          group: "top",
+        },
+        {
+          id: `port-2`,
+          group: "bottom",
+        },
+      ],
+      data: {
+        status: "failed",
+        label: `No.${i}`,
+      },
+    });
+  }
+
+  console.log(dataNode);
+
+  for (let i = 0; i < dataNode.length; i++) {
+    if (i !== dataNode.length - 1) {
+      dataEdge.push({
+        shape: "dag-edge",
+        source: {
+          cell: `node_${i}`,
+          port: "port-2",
+        },
+        target: {
+          cell: `node_${i + 1}`,
+          port: "port-1",
+        },
+        zIndex: 0,
+      });
+    }
+  }
+
+  dataNode.forEach((item) => {
+    cells.push(graph.value.createNode(item));
   });
 
-  graph.value.addNode({
-    shape: "node_hu",
-    x: 100,
-    y: 180,
-    data: {
-      status: "running",
-      label: "No.2",
-    },
+  dataEdge.forEach((item) => {
+    cells.push(graph.value.createEdge(item));
   });
 
-  graph.value.addNode({
-    shape: "node_hu",
-    x: 100,
-    y: 300,
-    data: {
-      status: "failed",
-      label: "No.3",
-    },
-  });
+  graph.value.resetCells(cells);
+  graph.value.centerContent();
 };
 
 onMounted(() => {
