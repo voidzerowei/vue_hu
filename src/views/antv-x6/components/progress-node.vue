@@ -21,11 +21,14 @@
 </template>
 
 <script setup>
-import { reactive, inject, onMounted } from "vue";
+import { ref, reactive, inject, onMounted } from "vue";
 
 const getNode = inject("getNode");
+const label = ref("");
+const status = ref("default");
+const image = ref("");
 
-const image = reactive({
+const images = reactive({
   default: "",
   success:
     "https://gw.alipayobjects.com/mdn/rms_43231b/afts/img/A*6l60T6h8TTQAAAAAAAAAAAAAARQnAQ",
@@ -37,7 +40,9 @@ const image = reactive({
 
 onMounted(() => {
   const node = getNode();
-  console.log(node);
+  label.value = node.data.label;
+  status.value = node.data.status;
+  image.value = images[status.value];
 });
 </script>
 

@@ -7,22 +7,59 @@
 </template>
 
 <script setup>
-import { Graph } from "@antv/x6";
+import { Graph, Path } from "@antv/x6";
 import { reactive, onMounted } from "vue";
 import { register, getTeleport } from "@antv/x6-vue-shape";
 import ProgressNode from "./components/progress-node.vue";
 
 register({
   shape: "node_hu",
-  width: 100,
-  height: 100,
+  width: 200,
+  height: 70,
   component: ProgressNode,
 });
+
+Graph.registerEdge(
+  "dag-edge",
+  {
+    inherit: "edge",
+    attrs: {
+      line: {
+        stroke: "#C2C8D5",
+        strokeWidth: 1,
+        targetMarker: "classic",
+      },
+    },
+  },
+  true
+);
+
+Graph.registerConnector(
+  "algo-connector",
+  (s, e) => {
+    const offset = 4;
+    const deltaY = Math.abs(e.y - s.y);
+    const control = Math.floor((deltaY / 3) * 2);
+
+    const v1 = { x: s.x, y: s.y + offset + control };
+    const v2 = { x: e.x, y: e.y - offset - control };
+
+    return Path.normalize(
+      `M ${s.x} ${s.y}
+       L ${s.x} ${s.y + offset}
+       C ${v1.x} ${v1.y} ${v2.x} ${v2.y} ${e.x} ${e.y - offset}
+       L ${e.x} ${e.y}
+      `
+    );
+  },
+  true
+);
+
 const TeleportContainer = getTeleport();
 
 const graph = reactive({});
 
-onMounted(() => {
+const initGraph = () => {
   graph.value = new Graph({
     container: document.getElementById("container"),
     background: {
@@ -44,12 +81,43 @@ onMounted(() => {
       ],
     },
   });
-
+};
+const initNode = () => {
   graph.value.addNode({
     shape: "node_hu",
     x: 100,
     y: 60,
+    data: {
+      status: "success",
+      label: "No.1",
+    },
   });
+
+  graph.value.addNode({
+    shape: "node_hu",
+    x: 100,
+    y: 180,
+    data: {
+      status: "running",
+      label: "No.2",
+    },
+  });
+
+  graph.value.addNode({
+    shape: "node_hu",
+    x: 100,
+    y: 300,
+    data: {
+      status: "failed",
+      label: "No.3",
+    },
+  });
+};
+
+onMounted(() => {
+  initGraph();
+
+  initNode();
 });
 </script>
 
